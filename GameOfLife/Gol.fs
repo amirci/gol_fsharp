@@ -34,12 +34,13 @@ type CellPattern (size: int, startCells: Cell List) =
         |> map2Cells
         |> Seq.concat
         |> Seq.choose id
+        |> Set.ofSeq
 
     member this.Parsed = parseCells startCells
 
     override this.Equals obj =
         match obj with
-        | :? CellPattern as other -> this.Parsed = other.Parsed
+        | :? CellPattern as other -> this.Parsed - other.Parsed = Set.empty
         | _ -> false
 
     override this.ToString () =

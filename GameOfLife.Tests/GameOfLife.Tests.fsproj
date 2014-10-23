@@ -49,10 +49,11 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="Gol.Tests.fs" />
+    <Compile Include="CellPattern.Tests.fs" />
     <None Include="Script.fsx" />
     <Content Include="packages.config" />
     <Content Include="app.config" />
+    <Compile Include="Gol.Tests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsUnit.NUnit">

@@ -4,8 +4,8 @@ type Cell =
     | Alive
     | Dead
 
-let x = Alive
-let o = Dead
+let x = Dead
+let o = Alive
 
 type Position = int * int
 
@@ -30,7 +30,7 @@ type CellPattern (size: int, startCells: Cell List) =
 
         let map2Cells cells = cells |> Seq.mapi row2Pos
 
-        chop 3 board
+        chop size board
         |> map2Cells
         |> Seq.concat
         |> Seq.choose id
@@ -41,6 +41,11 @@ type CellPattern (size: int, startCells: Cell List) =
         match obj with
         | :? CellPattern as other -> this.Parsed = other.Parsed
         | _ -> false
+
+    override this.ToString () =
+        this.Parsed 
+        |> Seq.map (fun (i, j) -> sprintf "(%d, %d)" i j) 
+        |> String.concat " - " 
 
     override this.GetHashCode () =
         startCells.GetHashCode()

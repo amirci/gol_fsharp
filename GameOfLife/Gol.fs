@@ -1,16 +1,8 @@
 ﻿module GameOfLife
 
-type Cell =
-    | Alive
-    | Dead
+open Gol.Model
 
-let x = Dead
-let o = Alive
-
-type Position = int * int
-
-type CellPattern (size: int, startCells: Cell List) = 
-
+let LoadCells size board =
     let rec chop segmentSize source = 
         seq { 
                 if Seq.isEmpty source then () else
@@ -20,36 +12,44 @@ type CellPattern (size: int, startCells: Cell List) =
                 yield! chop segmentSize rest 
         }
     
-    let parseCells board =
-        let cell2Pos row col state =
-            match state with 
-            | Alive -> Some(row, col)
-            | _ -> None
+    let cell2Pos row col state =
+        match state with 
+        | Alive -> Some(row, col)
+        | _ -> None
 
-        let row2Pos row cells = cells |> Seq.mapi (cell2Pos row)
+    let row2Pos row cells = cells |> Seq.mapi (cell2Pos row)
 
-        let map2Cells cells = cells |> Seq.mapi row2Pos
+    let map2Cells cells = cells |> Seq.mapi row2Pos
 
-        chop size board
-        |> map2Cells
-        |> Seq.concat
-        |> Seq.choose id
-        |> Set.ofSeq
+    CellPattern(chop size board
+                |> map2Cells
+                |> Seq.concat
+                |> Seq.choose id
+                |> Set.ofSeq)
 
-    member this.Parsed = parseCells startCells
-
-    override this.Equals obj =
-        match obj with
-        | :? CellPattern as other -> this.Parsed - other.Parsed = Set.empty
-        | _ -> false
-
-    override this.ToString () =
-        this.Parsed 
-        |> Seq.map (fun (i, j) -> sprintf "(%d, %d)" i j) 
-        |> String.concat " - " 
-
-    override this.GetHashCode () =
-        startCells.GetHashCode()
 
 let Evolve (pattern: CellPattern) =
-    pattern
+    let add (p1, p2) (q1, q2) = p1 + q1, p2 + q2
+
+    let neighbours cell =
+        [-1, -1 ; -1, 0 ; -1, 1; 
+          0, -1 ;          0, 1; 
+          1, -1 ;  1, 0 ;  1, 1]
+        |> List.map (add cell)
+
+    let aliveNeighbours cell =
+        cell
+        |> neighbours
+        |> List.filter pattern.Contains
+
+    let applyRules cell =
+        match aliveNeighbours cell |> List.length with
+        | 2 when pattern.Contains cell -> Some cell
+        | 3 -> Some cell
+        | _ -> None
+    
+    let rangeIncludingDeadNeighbours () = pattern |> Seq.collect neighbours
+    
+    CellPattern(rangeIncludingDeadNeighbours ()
+                |> Seq.map applyRules
+                |> Seq.choose id)

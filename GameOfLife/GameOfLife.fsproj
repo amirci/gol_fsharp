@@ -42,6 +42,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GolTypes.fs" />
     <Compile Include="Gol.fs" />
   </ItemGroup>
   <PropertyGroup>

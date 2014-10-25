@@ -6,6 +6,8 @@ type Cell =
 
 let x = Dead
 let o = Alive
+let oo = Alive
+let __ = Dead
 
 type Position = int * int
 

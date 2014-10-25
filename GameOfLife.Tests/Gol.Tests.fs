@@ -12,12 +12,16 @@ module ``GOL Acceptance tests`` =
         let block = LoadCells 2 [o ; o ;
                                  o ; o ;]
 
-        let sameBlock = LoadCells 2 [o ; o ;
-                                     o ; o ;]
+        GameOfLife.Evolve block |> should equal block
 
 
-        GameOfLife.Evolve block |> should equal sameBlock
+    [<Test>]
+    let ``A beehive never changes`` () =
+        let beehive = LoadCells 4 [__ ; oo ; oo ; __ ;
+                                   oo ; __ ; __ ; oo ;
+                                   __ ; oo ; oo ; __ ]
 
+        GameOfLife.Evolve beehive |> should equal beehive
 
     [<Test>]
     let ``A blinker turns from horizontal to vertical`` () =

@@ -49,6 +49,7 @@ let main argv =
         let printCols row = seq { 0..boardSize } |> Seq.iter (printCellAt row)
     
         Console.SetCursorPosition(colMargin, 0)
+        Console.ForegroundColor <- ConsoleColor.Yellow
         printf "%s" name
 
         seq { 0..boardSize } |> Seq.iter printCols
@@ -102,6 +103,7 @@ let main argv =
         printf "Options:\n"
         printf " n : next evolve\n"
         printf " t : evolve 10 times\n"
+        printf " w : evolve 20 times\n"
         printf " p : choose a pattern\n"
         printf " any other key to quit\n"
     
@@ -118,6 +120,7 @@ let main argv =
         match askOption() with
         | 'n' -> pattern |> evolve |> showIt
         | 't' -> pattern |> evolve |> repeat 10 |> showIt
+        | 'w' -> pattern |> evolve |> repeat 20 |> showIt
         | 'p' -> changePatternAnd showIt
         | x   -> 
             Console.SetCursorPosition(0, Console.CursorTop)

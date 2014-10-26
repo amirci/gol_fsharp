@@ -53,3 +53,11 @@ let Evolve (pattern: CellPattern) =
     CellPattern(rangeIncludingDeadNeighbours ()
                 |> Seq.map applyRules
                 |> Seq.choose id)
+
+
+
+module Patterns =
+
+    let Blinker = LoadCells 3 [x ; o ; x ;
+                               x ; o ; x ;
+                               x ; o ; x ]

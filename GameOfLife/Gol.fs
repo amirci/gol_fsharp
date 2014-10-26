@@ -28,7 +28,7 @@ let LoadCells size board =
                 |> Set.ofSeq)
 
 
-let Evolve (pattern: CellPattern) =
+let Evolve (pattern: CellPattern) : CellPattern =
     let add (p1, p2) (q1, q2) = p1 + q1, p2 + q2
 
     let neighbours cell =
@@ -61,3 +61,18 @@ module Patterns =
     let Blinker = LoadCells 3 [x ; o ; x ;
                                x ; o ; x ;
                                x ; o ; x ]
+
+
+    let Beehive = LoadCells 4 [__ ; oo ; oo ; __ ;
+                               oo ; __ ; __ ; oo ;
+                               __ ; oo ; oo ; __ ]
+
+
+    let Block = LoadCells 2 [o ; o ;
+                             o ; o ;]
+
+    let Glider = LoadCells 3 [o ; x ; x ;
+                              x ; o ; o ;
+                              o ; o ; x ]
+
+    

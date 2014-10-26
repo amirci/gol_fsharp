@@ -2,6 +2,7 @@
 open System
 open GameOfLife
 open Gol.Model
+open GameOfLife.Patterns
 
 [<EntryPoint>]
 let main argv =
@@ -11,7 +12,15 @@ let main argv =
     let growth = 3
     let boardSize = 10
 
-    let printPattern (pattern: CellPattern) =
+    let All = ["Blinker", Blinker ;
+               "Beehive", Beehive ;
+               "Block"  , Block   ;
+               "Glider" , Glider  ;
+              ]
+
+    let evolve (name, pattern) = name, (pattern |> Evolve)
+
+    let printPattern (name, pattern: CellPattern) =
         let showCell alive =
             let cell = match alive with
                         | true -> 
@@ -23,7 +32,7 @@ let main argv =
             Console.Write cell
             Console.Write ' '
 
-        let printCell row col =
+        let printCellAt row col =
             let factor = growth + 1
             seq { 0..growth - 1 }
             |> Seq.iter (fun rowAdj ->
@@ -37,47 +46,83 @@ let main argv =
                 ) 
             )
 
-        let printRows row = seq { 0..boardSize } |> Seq.iter (printCell row)
+        let printCols row = seq { 0..boardSize } |> Seq.iter (printCellAt row)
     
-        seq { 0..boardSize } |> Seq.iter printRows
+        Console.SetCursorPosition(colMargin, 0)
+        printf "%s" name
+
+        seq { 0..boardSize } |> Seq.iter printCols
 
         seq { 0..2 } |> Seq.iter (fun i -> printf "")
 
         Console.ResetColor()
 
-    let rec showAndEvolveRepeteadly pattern count callback =
-        let padLeft (s:string) = s.PadLeft (colMargin + boardSize * (growth+1))
+    let rec repeat count pattern  =
+        let lineLength = colMargin + boardSize * (growth + 1) - 1
+
         match count with
         | x when x > 0 -> 
             Console.SetCursorPosition(colMargin, 0)
-            printf "%s" (count.ToString() |> padLeft)
+            printf "%s" (count.ToString().PadLeft lineLength)
             printPattern pattern
-            Threading.Thread.Sleep 1000
+            Threading.Thread.Sleep 200
+            pattern |> evolve |> repeat (count - 1)
 
-            showAndEvolveRepeteadly (pattern |> Evolve) (count - 1) callback
         | _ -> 
             Console.SetCursorPosition(colMargin, 0)
-            Console.Write(String(' ', 30))
-            callback (pattern |> Evolve)
+            Console.Write(String(' ', lineLength))
+            pattern
 
-    let rec showAndEvolve pattern =
-        printPattern pattern
+    let (|AnInt|_|) str =
+       match System.Int32.TryParse(str) with
+       | true, int -> Some int
+       | _ -> None
+   
+    let choosePattern () =
+
+        let isInRange i = i > 0 && i <= All.Length
+
+        Console.Clear()
+
+        printf "Available Patterns:\n"
+
+        All |> Seq.iteri (fun i (name, _) -> printf "%d: %s\n" (i + 1) name)
+
+        let answer = Console.ReadKey().KeyChar.ToString()
+
+        Console.Clear()
+
+        match answer with
+        | AnInt i when isInRange i -> Some All.[i - 1]
+        | _ -> None
+
+
+    let askOption () =
         printf "\n\n"
         printf "Options:\n"
-        printf " y : continue\n"
-        printf " e : evolve 10 times\n"
+        printf " n : next evolve\n"
+        printf " t : evolve 10 times\n"
+        printf " p : choose a pattern\n"
         printf " any other key to quit\n"
     
-        let yesOrNo = Console.ReadKey().KeyChar
+        Console.ReadKey().KeyChar
 
-        match yesOrNo with
-        | 'y' -> showAndEvolve (pattern |> Evolve)
-        | 'e' -> showAndEvolveRepeteadly (pattern |> Evolve) 10 showAndEvolve
-        | _   -> printf "Thanks! you pressed %O\n" yesOrNo
-
-
-    Console.Clear()
-    showAndEvolve Patterns.Blinker
+    let changePatternAnd showFn = 
+        match choosePattern() with
+        | Some(pattern) -> pattern |> showFn
+        | _ -> ignore()
 
 
+    let rec showIt pattern =
+        printPattern pattern
+        match askOption() with
+        | 'n' -> pattern |> evolve |> showIt
+        | 't' -> pattern |> evolve |> repeat 10 |> showIt
+        | 'p' -> changePatternAnd showIt
+        | x   -> 
+            Console.SetCursorPosition(0, Console.CursorTop)
+            printf " \nYou pressed '%O' - See you next time!\n\n" x
+
+
+    changePatternAnd showIt
     0 // return an integer exit code

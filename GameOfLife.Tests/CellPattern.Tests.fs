@@ -3,8 +3,8 @@
 open NUnit.Framework
 open FsUnit
 
-open Gol.Model
-open GameOfLife
+open GameOfLife.Types
+open GameOfLife.Loader
 
 module ``Parsing Board Tests`` =
     [<Test>]

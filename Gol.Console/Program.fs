@@ -1,7 +1,7 @@
 ﻿
 open System
 open GameOfLife
-open Gol.Model
+open GameOfLife.Types
 open GameOfLife.Patterns
 
 [<EntryPoint>]
@@ -18,7 +18,7 @@ let main argv =
                "Glider" , Glider  ;
               ]
 
-    let evolve (name, pattern) = name, (pattern |> Evolve)
+    let evolve (name, pattern) = name, (pattern |> Gol.Evolve)
 
     let printPattern (name, pattern: CellPattern) =
         let showCell alive =

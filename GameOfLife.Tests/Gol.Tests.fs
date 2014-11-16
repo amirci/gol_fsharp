@@ -4,7 +4,8 @@ open NUnit.Framework
 open FsUnit
 
 open GameOfLife
-open Gol.Model
+open GameOfLife.Types
+open GameOfLife.Loader
 
 module ``GOL Acceptance tests`` = 
     [<Test>]
@@ -12,7 +13,7 @@ module ``GOL Acceptance tests`` =
         let block = LoadCells 2 [o ; o ;
                                  o ; o ;]
 
-        GameOfLife.Evolve block |> should equal block
+        block |> Gol.Evolve |> should equal block
 
 
     [<Test>]
@@ -21,7 +22,7 @@ module ``GOL Acceptance tests`` =
                                    oo ; __ ; __ ; oo ;
                                    __ ; oo ; oo ; __ ]
 
-        GameOfLife.Evolve beehive |> should equal beehive
+        Gol.Evolve beehive |> should equal beehive
 
     [<Test>]
     let ``A blinker turns from horizontal to vertical`` () =
@@ -33,8 +34,8 @@ module ``GOL Acceptance tests`` =
         let invertedBlinker = LoadCells 3 [x ; x ; x ;
                                            o ; o ; o ;]
 
-        GameOfLife.Evolve blinker |> should equal invertedBlinker
-        GameOfLife.Evolve invertedBlinker |> should equal blinker
+        Gol.Evolve blinker |> should equal invertedBlinker
+        Gol.Evolve invertedBlinker |> should equal blinker
         
 
     [<Test>]
@@ -59,6 +60,6 @@ module ``GOL Acceptance tests`` =
                                    x ; o ; o ;]
 
 
-        GameOfLife.Evolve glider  |> should equal glider1
-        GameOfLife.Evolve glider1 |> should equal glider2        
-        GameOfLife.Evolve glider2 |> should equal glider3
+        Gol.Evolve glider  |> should equal glider1
+        Gol.Evolve glider1 |> should equal glider2        
+        Gol.Evolve glider2 |> should equal glider3

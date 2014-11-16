@@ -1,4 +1,4 @@
-﻿module Gol.Model
+﻿module GameOfLife.Types
 
 type Cell =
     | Alive

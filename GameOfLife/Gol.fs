@@ -15,11 +15,12 @@ let Evolve board =
         let n = Seq.length cells
         (n = 3) || (n = 2 && board |> Board.isAlive c)
     
+    let findNeighbours = List.map nbrs >> List.concat
+    let applyRules = Seq.sort >> Seq.groupBy id >> Seq.filter rules >> Seq.map fst
+
     board
-    |> List.map nbrs |> List.concat
-    |> List.sort     |> Seq.groupBy id
-    |> Seq.filter rules
-    |> Seq.map fst
+    |> findNeighbours
+    |> applyRules
     |> List.ofSeq
 
 

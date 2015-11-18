@@ -2,36 +2,27 @@
 
 open Types
 
-let Evolve (pattern: CellPattern) : CellPattern =
-    let add (p1, p2) (q1, q2) = p1 + q1, p2 + q2
+module Board =
+    let isAlive c = List.exists ((=) c)
 
-    let neighbours cell =
-        [-1, -1 ; -1, 0 ; -1, 1; 
-          0, -1 ;          0, 1; 
-          1, -1 ;  1, 0 ;  1, 1]
-        |> List.map (add cell)
+let private nbrs (a, b) = 
+    [for i in -1..1 do 
+        for j in -1..1 do 
+            if i <> 0 || j <> 0 then yield (a + i, b + j)]
 
-    let aliveNeighbours cell =
-        cell
-        |> neighbours
-        |> List.filter pattern.Contains
-
-    let applyRules cell =
-        let neighbourCount = cell |> aliveNeighbours |> List.length
-        match neighbourCount with
-        | 2 when pattern.Contains cell -> Some cell
-        | 3 -> Some cell
-        | _ -> None
+let Evolve board =
+    let rules (c, cells) =
+        let n = Seq.length cells
+        (n = 3) || (n = 2 && board |> Board.isAlive c)
     
-    let cellsToEvaluate () = pattern |> Seq.collect neighbours
-    
-    let applyTheRules = Seq.map applyRules
+    board
+    |> List.map nbrs |> List.concat
+    |> List.sort     |> Seq.groupBy id
+    |> Seq.filter rules
+    |> Seq.map fst
+    |> List.ofSeq
 
-    let chooseOnlyAlive = Seq.choose id
 
-    CellPattern(cellsToEvaluate ()
-                |> applyTheRules
-                |> chooseOnlyAlive)
 
 
 

@@ -1,6 +1,7 @@
 ﻿
 open System
 open GameOfLife
+open GameOfLife
 open GameOfLife.Types
 open GameOfLife.Patterns
 
@@ -12,23 +13,21 @@ let main argv =
     let growth = 3
     let boardSize = 10
 
-    let All = ["Blinker", Blinker ;
-               "Beehive", Beehive ;
-               "Block"  , Block   ;
-               "Glider" , Glider  ;
-              ]
+    let all = [
+        "Blinker", Blinker 
+        "Beehive", Beehive 
+        "Block"  , Block 
+        "Glider" , Glider
+    ]
 
     let evolve (name, pattern) = name, (pattern |> Gol.Evolve)
 
-    let printPattern (name, pattern: CellPattern) =
+    let printPattern (name, pattern: Board) =
         let showCell alive =
-            let cell = match alive with
-                        | true -> 
-                            Console.ForegroundColor <- ConsoleColor.Yellow
-                            'o'
-                        | _ -> 
-                            Console.ForegroundColor <- ConsoleColor.Cyan
-                            'x'
+            let cell = 
+                match alive with
+                | true -> Console.ForegroundColor <- ConsoleColor.Yellow ; 'o'
+                | _    -> Console.ForegroundColor <- ConsoleColor.Cyan ; 'x'
             Console.Write cell
             Console.Write ' '
 
@@ -41,8 +40,7 @@ let main argv =
                     Console.SetCursorPosition(
                         colMargin + col * factor + colAdj, 
                         rowMargin + row * factor + rowAdj)
-                    let isAlive = pattern.Contains(row, col)
-                    showCell isAlive
+                    showCell (pattern |> Gol.Board.isAlive (row, col))
                 ) 
             )
 
@@ -81,20 +79,20 @@ let main argv =
    
     let choosePattern () =
 
-        let isInRange i = i > 0 && i <= All.Length
+        let isInRange i = i > 0 && i <= all.Length
 
         Console.Clear()
 
         printf "Available Patterns:\n"
 
-        All |> Seq.iteri (fun i (name, _) -> printf "%d: %s\n" (i + 1) name)
+        all |> Seq.iteri (fun i (name, _) -> printf "%d: %s\n" (i + 1) name)
 
         let answer = Console.ReadKey().KeyChar.ToString()
 
         Console.Clear()
 
         match answer with
-        | AnInt i when isInRange i -> Some All.[i - 1]
+        | AnInt i when isInRange i -> Some all.[i - 1]
         | _ -> None
 
 

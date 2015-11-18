@@ -11,6 +11,6 @@ let __ = Dead
 
 type Position = int * int
 
-type CellPattern = Position Set
+type Board = Position list
 
 

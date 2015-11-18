@@ -21,9 +21,9 @@ let LoadCells size board =
 
     let map2Cells cells = cells |> Seq.mapi row2Pos
 
-    CellPattern(chop size board
-                |> map2Cells
-                |> Seq.concat
-                |> Seq.choose id
-                |> Set.ofSeq)
+    chop size board
+    |> map2Cells
+    |> Seq.concat
+    |> Seq.choose id
+    |> List.ofSeq
                 
